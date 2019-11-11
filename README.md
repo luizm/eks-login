@@ -19,7 +19,7 @@ Configure the `eks-login` as command:
       - -vault-addr
       - <https://your.vault.domain>
       - -vault-key
-      - aws/creds/k8s-sandbox
+      - <aws/creds/k8s-sandbox>
 ```
 
 **Notes:**
