@@ -6,7 +6,8 @@ Edit the kubeconfig
 vi ~/.kube/config
 ```
 
-Configure the `eks-login` as command: 
+Configure the `eks-login` as command:
+
 ```
 - name: cluster-name
   user:
@@ -18,10 +19,11 @@ Configure the `eks-login` as command:
       - <cluster-name>
       - -vault-addr
       - <https://your.vault.domain>
-      - -vault-key
+      - -vault-path
       - <aws/creds/k8s-sandbox>
 ```
 
 **Notes:**
+
 - You will need to be logged in vault
 - If the AWS credential is valid eks-login does not be create another one
