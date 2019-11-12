@@ -36,7 +36,7 @@ func getVaultToken() ([]byte, error) {
 	return ioutil.ReadFile(filepath.Join(homeDir, ".vault-token"))
 }
 
-func fetchAwsCredsFromVault(vaultAddr, clusterName, vaultPath string) error {
+func fetchAwsCredsFromVault(clusterName, vaultAddr, vaultPath string) error {
 	config := &api.Config{
 		Address: vaultAddr,
 	}
@@ -60,7 +60,6 @@ func fetchAwsCredsFromVault(vaultAddr, clusterName, vaultPath string) error {
 		secret.Data["access_key"],
 		secret.Data["secret_key"],
 		secret.Data["security_token"])
-
 	return createFile(clusterName, content)
 }
 
@@ -78,7 +77,7 @@ func canAuthenticateToAws(clusterName string) bool {
 func main() {
 	clusterName := flag.String("cluster-name", "k8s-sandbox", "EKS cluster name, you can see this name in EKS console")
 	vaultAddr := flag.String("vault-addr", "", "The vault address, example: https://your.vault.domain")
-	vaultPath := flag.String("vault-key", "aws/creds/"+*clusterName, "The vault path, example: aws/creds/clustername.")
+	vaultPath := flag.String("vault-path", "aws/creds/"+*clusterName, "The vault path, example: aws/creds/clustername.")
 	flag.Parse()
 
 	if *vaultAddr == "" {
@@ -86,7 +85,8 @@ func main() {
 		os.Exit(1)
 	}
 	if !canAuthenticateToAws(*clusterName) {
-		fetchAwsCredsFromVault(*vaultAddr, *vaultPath, *clusterName)
+		fetchAwsCredsFromVault(*clusterName, *vaultAddr, *vaultPath)
 	}
-	fmt.Println(getEKSToken(*clusterName))
+	out, _ := getEKSToken(*clusterName)
+	fmt.Println(string(out))
 }
