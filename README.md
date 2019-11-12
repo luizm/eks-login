@@ -23,5 +23,6 @@ Configure the `eks-login` as command:
 ```
 
 **Notes:**
+- The `aws cli` is necessary yet.
 - You will need to be logged in vault
 - If the AWS credential is valid eks-login does not be create another one
