@@ -1,26 +1,31 @@
 name: goreleaser
-
-on:
-  pull_request:
-  push:
-
+on: [push]
 jobs:
-  goreleaser:
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Set up Go
+      - name: Set up Go 1.13
         uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
       - name: Get dependencies
         env:
-          GO111MODULE: "on"
+          GO111MODULE: on
         run: |
           go mod download
       - name: Build
         env:
-          GO111MODULE: "on"
+          GO111MODULE: on
         run: go build .
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v1
         with:
