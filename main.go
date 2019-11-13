@@ -4,13 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
+	"time"
 
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/hashicorp/vault/api"
 	"github.com/joho/godotenv"
 )
@@ -29,6 +28,7 @@ func createFile(clusterName string, content string) error {
 }
 
 func getEKSToken(clusterName string) ([]byte, error) {
+	loadEnv(clusterName)
 	return exec.Command("aws", "eks", "get-token", "--cluster-name", clusterName).Output()
 }
 
@@ -56,22 +56,34 @@ func fetchAwsCredsFromVault(clusterName, vaultAddr, vaultPath string) error {
 	}
 	content := fmt.Sprintf("AWS_ACCESS_KEY_ID = %s \n"+
 		"AWS_SECRET_ACCESS_KEY = %s \n"+
-		"AWS_SESSION_TOKEN = %s",
+		"AWS_SESSION_TOKEN = %s \n"+
+		"CREATION_TIME = %d \n"+
+		"TTL = %d \n",
 		secret.Data["access_key"],
 		secret.Data["secret_key"],
-		secret.Data["security_token"])
+		secret.Data["security_token"],
+		timeNow(),
+		secret.LeaseDuration)
+	time.Sleep(5)
 	return createFile(clusterName, content)
 }
 
-func canAuthenticateToAws(clusterName string) bool {
-	godotenv.Load(filepath.Join(eksLoginDir, clusterName))
-	svc := sts.New(session.New())
-	input := &sts.GetCallerIdentityInput{}
-	if _, err := svc.GetCallerIdentity(input); err != nil {
-		log.Println(err)
+func leaseIsValid() bool {
+	creationTime, _ := strconv.ParseInt(os.Getenv("CREATION_TIME"), 10, 64)
+	ttl, _ := strconv.ParseInt(os.Getenv("TTL"), 10, 64)
+	if timeNow() > (creationTime + ttl) {
 		return false
 	}
 	return true
+}
+
+func loadEnv(clusterName string) {
+	godotenv.Load(filepath.Join(eksLoginDir, clusterName))
+}
+
+func timeNow() int64 {
+	t := time.Now()
+	return t.Unix()
 }
 
 func main() {
@@ -84,7 +96,9 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
-	if !canAuthenticateToAws(*clusterName) {
+
+	loadEnv(*clusterName)
+	if !leaseIsValid() {
 		fetchAwsCredsFromVault(*clusterName, *vaultAddr, *vaultPath)
 	}
 	out, _ := getEKSToken(*clusterName)
