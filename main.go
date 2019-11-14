@@ -17,6 +17,8 @@ import (
 var homeDir = os.Getenv("HOME")
 var eksLoginDir = filepath.Join(homeDir, ".eks-login")
 
+const version string = "v0.1.0"
+
 func createFile(clusterName string, content string) error {
 	if err := os.MkdirAll(eksLoginDir, 0700); err != nil {
 		return err
@@ -90,8 +92,14 @@ func main() {
 	clusterName := flag.String("cluster-name", "k8s-sandbox", "EKS cluster name, you can see this name in EKS console")
 	vaultAddr := flag.String("vault-addr", "", "The vault address, example: https://your.vault.domain")
 	vaultPath := flag.String("vault-path", "aws/creds/"+*clusterName, "The vault path, example: aws/creds/clustername.")
+	appVersion := flag.Bool("version", false, "Shows application version")
 	flag.Parse()
 
+	if *appVersion == true {
+		out := fmt.Sprintf("%s %s", "eks-login", version)
+		fmt.Println(out)
+		os.Exit(0)
+	}
 	if *vaultAddr == "" {
 		flag.PrintDefaults()
 		os.Exit(1)
