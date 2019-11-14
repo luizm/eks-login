@@ -4,10 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/vault/api"
@@ -17,7 +19,7 @@ import (
 var homeDir = os.Getenv("HOME")
 var eksLoginDir = filepath.Join(homeDir, ".eks-login")
 
-const version string = "v0.1.0"
+const version string = "v0.1.1"
 
 func createFile(clusterName string, content string) error {
 	if err := os.MkdirAll(eksLoginDir, 0700); err != nil {
@@ -34,15 +36,34 @@ func getEKSToken(clusterName string) ([]byte, error) {
 	return exec.Command("aws", "eks", "get-token", "--cluster-name", clusterName).Output()
 }
 
-func getVaultToken() ([]byte, error) {
-	return ioutil.ReadFile(filepath.Join(homeDir, ".vault-token"))
+func getGithubToken(githubTokenPath string) ([]byte, error) {
+	return ioutil.ReadFile(githubTokenPath)
 }
 
-func fetchAwsCredsFromVault(clusterName, vaultAddr, vaultPath string) error {
+func getVaultTokenGitHub(vaultAddr, githubTokenPath string) (string, error) {
+	gitHubToken, _ := getGithubToken(githubTokenPath)
+	options := map[string]interface{}{
+		"token": strings.TrimSpace(string(gitHubToken)),
+	}
 	config := &api.Config{
 		Address: vaultAddr,
 	}
-	vaultToken, err := getVaultToken()
+	client, err := api.NewClient(config)
+	if err != nil {
+		return "", err
+	}
+	secret, err := client.Logical().Write("/auth/github/login", options)
+	if err != nil {
+		return "", err
+	}
+	return secret.Auth.ClientToken, nil
+}
+
+func fetchAwsCredsFromVault(clusterName, vaultAddr, vaultPath, githubTokenPath string) error {
+	config := &api.Config{
+		Address: vaultAddr,
+	}
+	vaultToken, err := getVaultTokenGitHub(vaultAddr, githubTokenPath)
 	if err != nil {
 		return err
 	}
@@ -92,6 +113,8 @@ func main() {
 	clusterName := flag.String("cluster-name", "k8s-sandbox", "EKS cluster name, you can see this name in EKS console")
 	vaultAddr := flag.String("vault-addr", "", "The vault address, example: https://your.vault.domain")
 	vaultPath := flag.String("vault-path", "aws/creds/"+*clusterName, "The vault path, example: aws/creds/clustername.")
+	githubTokenPath := flag.String("github-token-path", homeDir+"/.github-token", "Path to get the github credential")
+
 	appVersion := flag.Bool("version", false, "Shows application version")
 	flag.Parse()
 
@@ -107,7 +130,9 @@ func main() {
 
 	loadEnv(*clusterName)
 	if !leaseIsValid() {
-		fetchAwsCredsFromVault(*clusterName, *vaultAddr, *vaultPath)
+		if err := fetchAwsCredsFromVault(*clusterName, *vaultAddr, *vaultPath, *githubTokenPath); err != nil {
+			log.Fatalln(err)
+		}
 	}
 	out, _ := getEKSToken(*clusterName)
 	fmt.Println(string(out))
