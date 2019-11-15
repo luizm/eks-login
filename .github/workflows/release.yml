@@ -13,7 +13,7 @@ jobs:
       - name: Set up Go 1.12
         uses: actions/setup-go@v1
         with:
-          go-version: 1.13
+          go-version: 1.12
         id: go
       - name: Check out code into the Go module directory
         uses: actions/checkout@v1
@@ -24,4 +24,4 @@ jobs:
         with:
           args: release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
