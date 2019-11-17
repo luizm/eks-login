@@ -2,7 +2,7 @@
 
 I would like do use the vault to get temporary [AWS credencial](https://www.vaultproject.io/docs/secrets/aws/index.html) and access the EKS service.
 
-The problem is this AWS credentials no valid for more than 12 hours, so, this script will automate this process.
+The problem is, the AWS credentials no valid for more than 12 hours, so, this script will automate this process.
 
 **Notes:**
 
@@ -18,7 +18,9 @@ Edit the kubeconfig
 vi ~/.kube/config
 ```
 
-Configure the `eks-login` as command:
+In the right context, configure the `eks-login` as command instead of `aws cli` or `aws-iam-authenticator`
+
+Example:
 
 ```
 - name: cluster-name
