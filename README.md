@@ -10,19 +10,15 @@ The problem is, the AWS credentials no valid for more than 12 hours, so, this sc
 - The github auth is the only method supported to auth into vault
 - If the AWS credential is valid eks-login does not be create another one
 
-<b>
 
 ### How to install 
 
-Using homebrew:
-
-```sh
+```
 brew install luizm/tap/eks-login
 ```
 
 For Linux platform, download the binary directly on the [release page](https://github.com/luizm/eks-login/releases) 
 
-<b>
 
 ### How to use
 
