@@ -14,6 +14,8 @@ The problem is, the AWS credentials no valid for more than 12 hours, so, this sc
 
 ### How to install 
 
+Using homebrew:
+
 ```sh
 brew install luizm/tap/eks-login
 ```
