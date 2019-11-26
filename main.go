@@ -87,7 +87,6 @@ func fetchAwsCredsFromVault(clusterName, vaultAddr, vaultPath, githubTokenPath s
 		secret.Data["security_token"],
 		timeNow(),
 		secret.LeaseDuration)
-	time.Sleep(5)
 	return createFile(clusterName, content)
 }
 
