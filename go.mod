@@ -1,6 +1,6 @@
 module github.com/luizm/eks-login
 
-go 1.12
+go 1.14
 
 require (
 	github.com/hashicorp/vault/api v1.0.4
