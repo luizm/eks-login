@@ -14,7 +14,7 @@ The problem is, the STS AWS credentials no valid for more than 12 hours, so, thi
 1 - Download the binary from github page or on OsX:
 
 ```
-brew install
+brew install luizm/tap/eks-login
 ```
 
 In the correct context into kubeconfig file, edit de command block and set the `eks-login` including some arguments:
