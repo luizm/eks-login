@@ -1,4 +1,4 @@
-brew:
+brews:
   github:
     owner: luizm
     name: homebrew-tap
