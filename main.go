@@ -13,7 +13,7 @@ import (
 	"github.com/luizm/eks-login/internal/vault"
 )
 
-const version string = "v0.1.2"
+const version string = "v1.0.1"
 
 var homeDir = os.Getenv("HOME")
 var eksLoginDir = filepath.Join(os.Getenv("HOME"), ".eks-login")
