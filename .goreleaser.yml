@@ -1,5 +1,5 @@
 brews:
-  - name: luizm
+  - name: eks-login
     github:
       owner: luizm
       name: homebrew-tap
