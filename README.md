@@ -1,6 +1,6 @@
 ### Description
 
-I would like do use the vault to get temporary [AWS credencial](https://www.vaultproject.io/docs/secrets/aws/index.html) and using it to access the EKS service.
+I would like do use the vault to get temporary [AWS Credencial](https://www.vaultproject.io/docs/secrets/aws/index.html) and using it to access the EKS service.
 
 The problem is, the STS AWS credentials no valid for more than 12 hours, so, this script will automate the process.
 
