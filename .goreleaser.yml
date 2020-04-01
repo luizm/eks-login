@@ -1,9 +1,10 @@
 brews:
-  github:
-    owner: luizm
-    name: homebrew-tap
-  homepage: https://github.com/luizm/eks-login
-  description: CLI to automate the EKS login process using STS credentials created by vault.
-  folder: Formula
-  test: |
-    system "#{bin}/eks-login -v"
+  - name: luizm
+    github:
+      owner: luizm
+      name: homebrew-tap
+    homepage: https://github.com/luizm/eks-login
+    description: CLI to automate the EKS login process using STS credentials created by vault.
+    folder: Formula
+    test: |
+      system "#{bin}/eks-login -v"
