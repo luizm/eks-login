@@ -13,13 +13,14 @@ import (
 	"github.com/luizm/eks-login/internal/vault"
 )
 
-const version string = "v0.1.1"
+const version string = "v0.1.2"
 
 var homeDir = os.Getenv("HOME")
 var eksLoginDir = filepath.Join(os.Getenv("HOME"), ".eks-login")
 
 func main() {
 	clusterName := flag.String("cluster-name", "k8s-sandbox", "EKS cluster name, you can see this name in EKS console")
+	region := flag.String("region", "us-east-1", "AWS region that EKS cluster is running")
 	vaultAddr := flag.String("vault-addr", "", "The vault address, example: https://your.vault.domain")
 	vaultPath := flag.String("vault-path", "aws/creds/"+*clusterName, "The vault path, example: aws/creds/clustername.")
 	githubTokenPath := flag.String("github-token-path", homeDir+"/.github-token", "Path to get the github credential")
@@ -52,6 +53,9 @@ func main() {
 			godotenv.Load(filepath.Join(eksLoginDir, *clusterName))
 		}
 	}
-	out, _ := eks.GetEKSToken(*clusterName)
-	fmt.Println(string(out))
+	out, err := eks.GetEKSToken(*clusterName, *region)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(out)
 }
