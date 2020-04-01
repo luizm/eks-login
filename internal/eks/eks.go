@@ -1,10 +1,33 @@
 package eks
 
 import (
-	"os/exec"
+	"sigs.k8s.io/aws-iam-authenticator/pkg/token"
 )
 
-//GetEKSToken get the EKS token using aws cli
-func GetEKSToken(clusterName string) ([]byte, error) {
-	return exec.Command("aws", "eks", "get-token", "--cluster-name", clusterName).Output()
+//GetEKSToken get the temporary token in json format
+func GetEKSToken(clusterName, region string) (string, error) {
+	var tok token.Token
+	var out string
+	var err error
+
+	gen, err := token.NewGenerator(false, false)
+	if err != nil {
+		return "", err
+	}
+
+	tok, err = gen.GetWithOptions(&token.GetTokenOptions{
+		ClusterID:            clusterName,
+		Region:               region,
+		AssumeRoleARN:        "",
+		AssumeRoleExternalID: "",
+		SessionName:          "",
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	out = gen.FormatJSON(tok)
+
+	return out, nil
 }

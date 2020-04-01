@@ -4,10 +4,9 @@ I would like do use the vault to get temporary [AWS credencial](https://www.vaul
 
 The problem is, the STS AWS credentials no valid for more than 12 hours, so, this script will automate the process.
 
-**Notes:**
+**Auth methods supported:**
 
-- The `aws cli` is necessary yet
-- The github auth is the only method supported to auth into vault
+- github
 
 ### How to use
 
@@ -34,6 +33,4 @@ Example:
       - <https://VAULT_ENDPOINT>
       - -vault-path
       - <PATH_TO_GET_THE_CREDENDIALS>
-      - -github-token-path
-      - <GITHUB_TOKEN_PATH>
 ```
