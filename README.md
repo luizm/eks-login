@@ -1,6 +1,6 @@
 ### Description
 
-I would like do use the vault to get temporary [AWS Credencial](https://www.vaultproject.io/docs/secrets/aws/index.html) and using it to access the EKS service.
+I would like do use the [hashicorp vault](https://www.vaultproject.io/docs/secrets/aws/index.html) to get temporary [AWS Credencial](https://www.vaultproject.io/docs/secrets/aws/index.html) and using it to access the EKS service.
 
 The problem is, the STS AWS credentials no valid for more than 12 hours, so, this script will automate the process.
 
@@ -16,7 +16,7 @@ The problem is, the STS AWS credentials no valid for more than 12 hours, so, thi
 brew install luizm/tap/eks-login
 ```
 
-In the correct context into kubeconfig file, edit de command block and set the `eks-login` including some arguments:
+In the correct context into kubeconfig file, edit de `command` block use `eks-login` instead of `aws cli` or `aws-iam-authenticator`
 
 Example:
 
