@@ -20,11 +20,10 @@ var eksLoginDir = filepath.Join(os.Getenv("HOME"), ".eks-login")
 
 func main() {
 	clusterName := flag.String("cluster-name", "k8s-sandbox", "EKS cluster name, you can see this name in EKS console")
-	region := flag.String("region", "us-east-1", "AWS region that EKS cluster is running")
+	region := flag.String("region", "us-east-1", "AWS region where EKS cluster is running")
 	vaultAddr := flag.String("vault-addr", "", "The vault address, example: https://your.vault.domain")
-	vaultPath := flag.String("vault-path", "aws/creds/"+*clusterName, "The vault path, example: aws/creds/clustername.")
-	githubTokenPath := flag.String("github-token-path", homeDir+"/.github-token", "Path to get the github credential")
-
+	vaultPath := flag.String("vault-path", "aws/creds/"+*clusterName, "The vault endpoint path, example: aws/creds/clustername")
+	githubTokenPath := flag.String("github-token-path", homeDir+"/.github-token", "Path to file with github credential")
 	appVersion := flag.Bool("version", false, "Shows application version")
 	flag.Parse()
 
@@ -33,6 +32,7 @@ func main() {
 		fmt.Println(out)
 		os.Exit(0)
 	}
+
 	if *vaultAddr == "" {
 		flag.PrintDefaults()
 		os.Exit(1)
@@ -40,7 +40,6 @@ func main() {
 
 	godotenv.Load(filepath.Join(eksLoginDir, *clusterName))
 	if !vault.LeaseIsValid() {
-
 		if content, err := vault.FetchAwsCredsFromVault(*clusterName, *vaultAddr, *vaultPath, *githubTokenPath); err != nil {
 			log.Fatalln(err)
 		} else {
