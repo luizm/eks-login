@@ -24,8 +24,8 @@ Example:
 - name: cluster-name
   user:
     exec:
-      command: eks-login
       apiVersion: client.authentication.k8s.io/v1alpha1
+      command: eks-login
       args:
       - -cluster-name
       - <CLUSTER_NAME>
